@@ -32,11 +32,18 @@ public class MyLinkedList<T> implements List<T> {
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return size == 0;
     }
 
     @Override
     public boolean contains(Object o) {
+        Node<T> currentElement=this.root;
+        while (currentElement.next!=null){
+            if(currentElement.element.equals(o)){
+                return true;
+            }
+            currentElement=currentElement.next;
+        }
         return false;
     }
 
@@ -169,10 +176,30 @@ public class MyLinkedList<T> implements List<T> {
         private Node (){
         }
 
-        private Node (Node previous, Node next, T element){
+        private Node (Node<T> previous, Node<T> next, T element){
             this.previous = previous;
             this.next = next;
             this.element = element;
+        }
+
+        @Override
+        public boolean equals (Object otherObj){
+            if(this==otherObj){
+                return true;
+            }
+            if(otherObj==null){
+                return false;
+            }
+            if(this.getClass()!=otherObj.getClass()){
+                return false;
+            }
+            Node <T> other=(Node<T>) otherObj;
+            return this.element.equals(other.element);
+        }
+
+        @Override
+        public int hashCode(){
+            return element.hashCode();
         }
 
 
