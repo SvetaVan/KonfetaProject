@@ -24,6 +24,7 @@ public class MyLinkedList<T> implements List<T> {
         return size;
     }*/
 
+
     @Override
     public int size(){
         return size;
@@ -49,11 +50,17 @@ public class MyLinkedList<T> implements List<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return null;
+        return new MyLinkedListIterator<>(root) ;
     }
 
     @Override
     public Object[] toArray() {
+
+
+
+
+
+
         return new Object[0];
     }
 
@@ -168,15 +175,16 @@ public class MyLinkedList<T> implements List<T> {
     }
 
 
-    private class Node <T> {
-        private Node<T> previous;
-        private Node<T> next;
-        private T element;
 
-        private Node (){
+    static class Node<V> {
+        private Node<V> previous;
+        private Node<V> next;
+        private V element;
+
+        private Node(){
         }
 
-        private Node (Node<T> previous, Node<T> next, T element){
+        Node(Node<V> previous, Node<V> next, V element){
             this.previous = previous;
             this.next = next;
             this.element = element;
@@ -193,13 +201,33 @@ public class MyLinkedList<T> implements List<T> {
             if(this.getClass()!=otherObj.getClass()){
                 return false;
             }
-            Node <T> other=(Node<T>) otherObj;
+            Node<V> other=(Node<V>) otherObj;
             return this.element.equals(other.element);
         }
 
         @Override
         public int hashCode(){
             return element.hashCode();
+        }
+
+        Node<V> getNext (){
+            return next;
+        }
+
+        Node<V> getPrevious (){
+            return previous;
+        }
+
+
+        V getCurrentElement (){
+            return element;
+        }
+
+        void setPrevious(Node<V> node){
+            this.previous = node;
+        }
+        void setNext(Node<V> node){
+            this.next = node;
         }
 
 
