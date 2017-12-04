@@ -10,7 +10,14 @@ public class TestIterator {
     myLinkedList.add(3);
     Iterator<Integer> integerIterator = myLinkedList.iterator();
     while(integerIterator.hasNext()){
-        System.out.println(integerIterator.next());
+        int currentElement = integerIterator.next();
+        System.out.print(currentElement);
+        if(currentElement==2){
+            integerIterator.remove();
+            System.out.println(" element deleted ");
+        }else {
+            System.out.println(" element wasn't deleted ");
+        }
     }
     }
 }
