@@ -1,14 +1,12 @@
 package myStructures;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class MyLinkedList<T> implements List<T> {
     Node<T> root;
-    Node<T> last;
-    int size;
+    private Node<T> last;
+    private int size;
 
     /*@Override
     public int size() {
@@ -26,7 +24,7 @@ public class MyLinkedList<T> implements List<T> {
 
 
     @Override
-    public int size(){
+    public int size() {
         return size;
     }
 
@@ -38,64 +36,128 @@ public class MyLinkedList<T> implements List<T> {
 
     @Override
     public boolean contains(Object o) {
-        Node<T> currentElement=this.root;
-        while (currentElement.next!=null){
-            if(currentElement.element.equals(o)){
+        Node<T> currentElement = this.root;
+        while (currentElement.next != null) {
+            if (currentElement.element.equals(o)) {
                 return true;
             }
-            currentElement=currentElement.next;
+            currentElement = currentElement.next;
         }
         return false;
     }
 
     @Override
     public Iterator<T> iterator() {
-        return new MyLinkedListIterator<>(root) ;
+        return new MyLinkedListIterator<T>(this);
     }
 
     @Override
     public Object[] toArray() {
-
-
-
-
-
-
-        return new Object[0];
+        Object[] objectsArray = new Object[this.size];
+        Iterator<T> iterator = this.iterator();
+        int i = 0;
+        while (iterator.hasNext()) {
+            T currentElement = iterator.next();
+            objectsArray[i] = currentElement;
+            i++;
+        }
+        return objectsArray;
     }
 
     @Override
-    public <T1> T1[] toArray(T1[] t1s) {
-        return null;
+    public <E> E[] toArray(E[] destinationArray) {
+        if (destinationArray == null) {
+            throw new NullPointerException("the parameter source array is null");
+        }
+
+        if (size > 0) {
+            Class<?> arrayClass = destinationArray.getClass().getComponentType();
+            Class<?> elementsClass = root.element.getClass();
+            if (!arrayClass.isAssignableFrom(elementsClass)) {
+                throw new ArrayStoreException("if the runtime type of the specified array is not a supertype of the runtime type of every element in this list");
+            }
+        }
+
+        if (destinationArray.length == this.size) {
+            Iterator<T> iterator = this.iterator();
+            int i = 0;
+            while (iterator.hasNext()) {
+                T currentElement = iterator.next();
+                destinationArray[i] = (E) currentElement;
+                i++;
+            }
+            return destinationArray;
+        } else if (destinationArray.length > this.size) {
+            Iterator<T> iterator = this.iterator();
+            int i = 0;
+            while (iterator.hasNext()) {
+                T currentElement = iterator.next();
+                destinationArray[i] = (E) currentElement;
+                i++;
+            }
+            for (int j = destinationArray.length - 1; j > this.size; j--) {
+                destinationArray[j] = null;
+            }
+            return destinationArray;
+        } else { //if (destinationArray.length < this.size) {
+
+            destinationArray = (E[]) Array.newInstance(destinationArray.getClass().getComponentType(),this.size);
+            Iterator<T> iterator = this.iterator();
+            int i = 0;
+            while (iterator.hasNext()) {
+                T currentElement = iterator.next();
+                destinationArray[i] = (E) currentElement;
+                i++;
+            }
+
+            return destinationArray;
     }
+    }
+
+
 
     @Override
     public boolean add(T t) {
         size++;
-        if(root==null){
-            root = new Node<T>(null,null,t);
+        if (root == null) {
+            root = new Node<T>(null, null, t);
             last = root;
             return true;
-        }else {
-            Node<T> newNode = new Node<>(last,null,t);
+        } else {
+            Node<T> newNode = new Node<>(last, null, t);
             last.next = newNode;
             last = newNode;
             return true;
         }
     }
 
-    public Node<T> returnLastElement (Node <T> node){
-        if(node==null){
+    public Node<T> returnLastElement(Node<T> node) {
+        if (node == null) {
             return null;
         }
-        while (node.next!=null) {
-            node=node.next;
+        while (node.next != null) {
+            node = node.next;
         }
         return node;
     }
 
     @Override
     public boolean remove(Object o) {
+        if(o==null){
+            throw new NullPointerException("the parameter for search is null");
+        }
+        if(root!=null&&o.getClass()!=this.root.element.getClass()){
+            throw new ClassCastException("parameter type = "+o.getClass()+", collection element type = " + this.root.element.getClass());
+        }
+        Iterator<T> iterator = this.iterator();
+        while(iterator.hasNext()){
+            T currentObj = iterator.next();
+            if(currentObj.equals(o)){
+                iterator.remove();
+
+                return true;
+            }
+        }
         return false;
     }
 
@@ -175,58 +237,58 @@ public class MyLinkedList<T> implements List<T> {
     }
 
 
-
     static class Node<V> {
         private Node<V> previous;
         private Node<V> next;
         private V element;
 
-        private Node(){
+        private Node() {
         }
 
-        Node(Node<V> previous, Node<V> next, V element){
+        Node(Node<V> previous, Node<V> next, V element) {
             this.previous = previous;
             this.next = next;
             this.element = element;
         }
 
         @Override
-        public boolean equals (Object otherObj){
-            if(this==otherObj){
+        public boolean equals(Object otherObj) {
+            if (this == otherObj) {
                 return true;
             }
-            if(otherObj==null){
+            if (otherObj == null) {
                 return false;
             }
-            if(this.getClass()!=otherObj.getClass()){
+            if (this.getClass() != otherObj.getClass()) {
                 return false;
             }
-            Node<V> other=(Node<V>) otherObj;
+            Node<V> other = (Node<V>) otherObj;
             return this.element.equals(other.element);
         }
 
         @Override
-        public int hashCode(){
+        public int hashCode() {
             return element.hashCode();
         }
 
-        Node<V> getNext (){
+        Node<V> getNext() {
             return next;
         }
 
-        Node<V> getPrevious (){
+        Node<V> getPrevious() {
             return previous;
         }
 
 
-        V getCurrentElement (){
+        V getCurrentElement() {
             return element;
         }
 
-        void setPrevious(Node<V> node){
+        void setPrevious(Node<V> node) {
             this.previous = node;
         }
-        void setNext(Node<V> node){
+
+        void setNext(Node<V> node) {
             this.next = node;
         }
 

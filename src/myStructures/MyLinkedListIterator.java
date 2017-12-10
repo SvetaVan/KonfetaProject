@@ -5,18 +5,18 @@ import java.util.NoSuchElementException;
 
 public class MyLinkedListIterator<T> implements Iterator<T> {
     private MyLinkedList.Node<T> currentNode;
-    private MyLinkedList.Node<T> root;
+    private MyLinkedList myLinkedList;
 
-    public MyLinkedListIterator(MyLinkedList.Node<T> root) {
+    public MyLinkedListIterator(MyLinkedList<T> myLinkedList) {
         currentNode = null;
-        this.root= root;
+        this.myLinkedList= myLinkedList;
     }
 
     @Override
     public boolean hasNext() {
         if(currentNode!=null&&currentNode.getNext()!=null){
             return true;
-        }else if(root!=null&&currentNode==null){
+        }else if(myLinkedList.root!=null&&currentNode==null){
             return true;
         }
 
@@ -26,7 +26,7 @@ public class MyLinkedListIterator<T> implements Iterator<T> {
     @Override
     public T next() {
         if(currentNode==null){
-            currentNode=root;
+            currentNode=myLinkedList.root;
         }else if(hasNext()){
             currentNode=currentNode.getNext();
         }else{
@@ -38,8 +38,16 @@ public class MyLinkedListIterator<T> implements Iterator<T> {
     //currentNode.previous.next = currentNode.next;
     @Override
     public void remove() {
-        currentNode.getPrevious().setNext(currentNode.getNext());
-        currentNode.getNext().setPrevious(currentNode.getPrevious());
+        if(currentNode.getPrevious()==null){
+            currentNode.getNext().setPrevious(null);
+            myLinkedList.root=currentNode.getNext();
+
+        }else if(currentNode.getNext()==null){
+            currentNode.getPrevious().setNext(null);
+        }else{
+            currentNode.getPrevious().setNext(currentNode.getNext());
+            currentNode.getNext().setPrevious(currentNode.getPrevious());
+        }
     }
 
 }

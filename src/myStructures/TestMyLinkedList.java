@@ -5,14 +5,7 @@ import java.util.List;
 
 public class TestMyLinkedList {
     public static void main(String[] args) {
-        System.out.println(testMyLinkedList());
-
-        List<Integer> list = new ArrayList<>();
-        list.add(1);
-        list.add(2);
-        List<? extends Number> nums = list;
-        nums.add(null);
-
+        removeTest();
 
 
     }
@@ -38,15 +31,20 @@ public class TestMyLinkedList {
         if(list.isEmpty()!=false){
             return "коллекция не пустая, но возвращает 0";
         }
-
-
-
-
-
-
-
         return "прошло проверку";
-
     }
+
+    public static void removeTest (){
+        MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
+        myLinkedList.add(1);
+        myLinkedList.add(2);
+        myLinkedList.add(3);
+        myLinkedList.add(4);
+        myLinkedList.remove((Object)1);
+        for (Integer integer:myLinkedList) {
+            System.out.println(integer);
+        }
+    }
+
 
 }
