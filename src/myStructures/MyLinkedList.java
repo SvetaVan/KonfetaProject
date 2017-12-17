@@ -37,7 +37,7 @@ public class MyLinkedList<T> implements List<T> {
     @Override
     public boolean contains(Object o) {
         Node<T> currentElement = this.root;
-        while (currentElement.next != null) {
+        while (currentElement != null) {
             if (currentElement.element.equals(o)) {
                 return true;
             }
@@ -101,7 +101,7 @@ public class MyLinkedList<T> implements List<T> {
             return destinationArray;
         } else { //if (destinationArray.length < this.size) {
 
-            destinationArray = (E[]) Array.newInstance(destinationArray.getClass().getComponentType(),this.size);
+            destinationArray = (E[]) Array.newInstance(destinationArray.getClass().getComponentType(), this.size);
             Iterator<T> iterator = this.iterator();
             int i = 0;
             while (iterator.hasNext()) {
@@ -111,13 +111,15 @@ public class MyLinkedList<T> implements List<T> {
             }
 
             return destinationArray;
+        }
     }
-    }
-
 
 
     @Override
     public boolean add(T t) {
+        if (t == null) {
+            throw new NullPointerException("null elements are not permitted");
+        }
         size++;
         if (root == null) {
             root = new Node<T>(null, null, t);
@@ -143,16 +145,16 @@ public class MyLinkedList<T> implements List<T> {
 
     @Override
     public boolean remove(Object o) {
-        if(o==null){
+        if (o == null) {
             throw new NullPointerException("the parameter for search is null");
         }
-        if(root!=null&&o.getClass()!=this.root.element.getClass()){
-            throw new ClassCastException("parameter type = "+o.getClass()+", collection element type = " + this.root.element.getClass());
+        if (root != null && o.getClass() != this.root.element.getClass()) {
+            throw new ClassCastException("parameter type = " + o.getClass() + ", collection element type = " + this.root.element.getClass());
         }
         Iterator<T> iterator = this.iterator();
-        while(iterator.hasNext()){
+        while (iterator.hasNext()) {
             T currentObj = iterator.next();
-            if(currentObj.equals(o)){
+            if (currentObj.equals(o)) {
                 iterator.remove();
 
                 return true;
@@ -163,12 +165,47 @@ public class MyLinkedList<T> implements List<T> {
 
     @Override
     public boolean containsAll(Collection<?> collection) {
-        return false;
+        if (collection == null) {
+            throw new NullPointerException("collection is null");
+        }
+        Iterator<?> iterator = collection.iterator();
+        Object firstElement = iterator.next();
+        if (root.element.getClass() != firstElement.getClass()) {
+            throw new ClassCastException("the types of one or more elements\n" +
+                    " in the specified collection are incompatible with this list\n" +
+                    root.element.getClass() + " doesn't equal to " + firstElement.getClass());
+        }
+        if (!contains(firstElement)) {
+            return false;
+        }
+        while (iterator.hasNext()) {
+            if (!contains(iterator.next())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends T> collection) {
-        return false;
+        if (collection == null) {
+            throw new NullPointerException("collection is null");
+        }
+        if (collection.size() == 0) {
+            throw new NoSuchElementException("collection is empty");
+        }
+        Iterator<? extends T> iterator = collection.iterator();
+        Object firstElement = iterator.next();
+        if (root.element.getClass() != firstElement.getClass()) {
+            throw new ClassCastException("the types of one or more elements\n" +
+                    " in the specified collection are incompatible with this list\n" +
+                    root.element.getClass() + " doesn't equal to " + firstElement.getClass());
+        }
+        this.add((T)firstElement);
+        while (iterator.hasNext()) {
+            this.add(iterator.next());
+        }
+        return true;
     }
 
     @Override
@@ -193,7 +230,16 @@ public class MyLinkedList<T> implements List<T> {
 
     @Override
     public T get(int i) {
-        return null;
+        Iterator<T> iterator = this.iterator();
+        int count = 0;
+        while (iterator.hasNext()) {
+            if (i == count) {
+                return iterator.next();
+            }
+            iterator.next();
+            count++;
+        }
+        throw new IndexOutOfBoundsException("передан некорректный параметр элемента, возможные значения от 0 до " + (this.size - 1));
     }
 
     @Override
@@ -201,8 +247,77 @@ public class MyLinkedList<T> implements List<T> {
         return null;
     }
 
-    @Override
+    /*@Override
     public void add(int i, T t) {
+        Node<T> elementToShift=root;
+        Node<T> elementToInsert = new Node<>();
+        elementToInsert.element = t;
+        int count = 0;
+        while (elementToShift!=null){
+            if(count==i&&count==0){
+                elementToInsert.setPrevious(null);
+                elementToInsert.setNext(elementToShift);
+                elementToShift.setPrevious(elementToInsert);
+                root = elementToInsert;
+                return;
+            }else if(count==i&&count==this.size-1){
+                elementToInsert.setPrevious(elementToShift.getPrevious());
+                elementToInsert.setNext(elementToShift);
+                elementToShift.setNext(null);
+                elementToInsert.getPrevious().setNext(elementToInsert);
+                return;
+            }else if(count==i){
+                elementToInsert.setPrevious(elementToShift.getPrevious());
+                elementToInsert.setNext(elementToShift);
+                elementToShift.getPrevious().setNext(elementToInsert);
+                elementToShift.setPrevious(elementToInsert);
+                return;
+            }
+            elementToShift = elementToShift.next;
+            count++;
+        }
+    }
+
+*/
+
+    private Node<T> findNode(int index){
+        Node<T> currentElement = root;
+        if(index>=size){
+            throw new IndexOutOfBoundsException(String.format("Too big index %s. Maximum: %s", index, size-1));
+        }
+        for(int i=0; i<index;i++){
+            currentElement = currentElement.next;
+        }
+        return currentElement;
+    }
+
+
+    @Override
+    public void add(int index, T element) {
+        // Если нам передан индекс после последнего элемента, это значит что мы хотим добавить в конец
+        if(index==size){
+            add(element);
+            return;
+        }
+
+        Node<T> nextNode = findNode(index);
+        Node<T> newNode = new Node<>(null, null, element);
+
+        // Связываем новый элемент со следующим
+        newNode.setNext(nextNode);
+        nextNode.setPrevious(newNode);
+
+        // Cвязываем новый элемент с предыдущим, если такой существует (предыдуим может оказаться первый)
+        Node<T> previousNode = nextNode.getPrevious();
+        if(previousNode !=null){
+            previousNode.setNext(newNode);
+            newNode.setPrevious(previousNode);
+        }
+
+        // Если мы добавляем в начало, не забудем и root обновить!
+        if(index == 0){
+            root = newNode;
+        }
 
     }
 
@@ -294,6 +409,5 @@ public class MyLinkedList<T> implements List<T> {
 
 
     }
-
-
 }
+

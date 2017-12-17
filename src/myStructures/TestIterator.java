@@ -1,11 +1,67 @@
 package myStructures;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 public class TestIterator {
     public static void main(String[] args) {
-    testToArrayWithParameter_destSizeIsLess();
+    testAddAtPosition();
 
+    }
+
+    public static void testAddAtPosition() {
+        MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
+        myLinkedList.add(1);
+        myLinkedList.add(2);
+        myLinkedList.add(3);
+        myLinkedList.add(0,10);
+        Iterator<Integer> integerIterator = myLinkedList.iterator();
+          while (integerIterator.hasNext()){
+              System.out.println(integerIterator.next());
+        }
+
+    }
+
+
+    public static void testAddAll() {
+        MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
+        myLinkedList.add(1);
+        myLinkedList.add(2);
+        myLinkedList.add(3);
+        Set<Integer> mySet = new HashSet<>();
+        System.out.println(myLinkedList.addAll(mySet));
+    }
+
+    public static void testContainsAll() {
+        MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
+        myLinkedList.add(1);
+        myLinkedList.add(2);
+        myLinkedList.add(3);
+        Set<Integer> mySet = new HashSet<>();
+        mySet.add(1);
+        mySet.add(2);
+        mySet.add(3);
+        System.out.println(myLinkedList.containsAll(mySet));
+    }
+
+
+
+    public static void testGetElemnt() {
+        MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
+        myLinkedList.add(1);
+        myLinkedList.add(2);
+        myLinkedList.add(3);
+        System.out.println("возвращаем 0 элемент");
+        System.out.println(myLinkedList.get(0)==1?"true":"false");
+        System.out.println("возвращаем 1 элемент");
+        System.out.println(myLinkedList.get(1)==2?"true":"false");
+        System.out.println("возвращаем 2 элемент");
+        System.out.println(myLinkedList.get(2)==3?"true":"false");
+        System.out.println("элемент выходит за пределы массива, больше длины массива");
+        System.out.println(myLinkedList.get(5));
+        System.out.println("элемент выходит за пределы массива, меньше длины массива");
+        System.out.println(myLinkedList.get(-5));
 
     }
 
@@ -26,7 +82,6 @@ public class TestIterator {
             }
         }
     }
-
 
     public static void testToArray() {
         MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
@@ -50,6 +105,7 @@ public class TestIterator {
         myLinkedList.toArray(destinationArraay);
 
     }
+
     public static void testToArrayWithParameter_StoreException() {
         MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
         myLinkedList.add(1);
@@ -73,6 +129,7 @@ public class TestIterator {
             System.out.println(integer);
         }
     }
+
     public static void testToArrayWithParameter_destSizeIsHigher() {
         System.out.println("destination array size is higher");
         MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
