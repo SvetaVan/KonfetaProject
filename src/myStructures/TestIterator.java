@@ -6,7 +6,69 @@ import java.util.Set;
 
 public class TestIterator {
     public static void main(String[] args) {
-    testAddAtPosition();
+    testClear();
+
+    }
+
+    public static void testClear() {
+        MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
+        myLinkedList.add(3);
+        myLinkedList.add(2);
+        myLinkedList.clear();
+        Iterator<Integer> integerIterator = myLinkedList.iterator();
+        while (integerIterator.hasNext()){
+            System.out.println(integerIterator.next());
+        }
+        System.out.println("final size = "+ myLinkedList.size());
+
+    }
+
+    public static void testRetainAll() {
+        MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
+        myLinkedList.add(3);
+        myLinkedList.add(2);
+        Set<Integer> mySet = new HashSet<>();
+        mySet.add(2);
+        myLinkedList.retainAll(mySet);
+
+        Iterator<Integer> integerIterator = myLinkedList.iterator();
+        while (integerIterator.hasNext()){
+            System.out.println(integerIterator.next());
+        }
+        System.out.println("final size = "+ myLinkedList.size());
+
+    }
+
+    public static void testRemoveAll() {
+        MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
+        myLinkedList.add(3);
+        myLinkedList.add(2);
+        Set<Integer> mySet = new HashSet<>();
+        mySet.add(3);
+        myLinkedList.removeAll(mySet);
+        Iterator<Integer> integerIterator = myLinkedList.iterator();
+        while (integerIterator.hasNext()){
+            System.out.println(integerIterator.next());
+        }
+        System.out.println("final size = "+ myLinkedList.size());
+
+    }
+
+    public static void testAddAllAtPosition() {
+        MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
+        myLinkedList.add(1);
+        myLinkedList.add(2);
+        myLinkedList.add(3);
+        Set<Integer> mySet = new HashSet<>();
+        mySet.add(5);
+        mySet.add(9);
+        mySet.add(11);
+        myLinkedList.addAll(3,mySet);
+        Iterator<Integer> integerIterator = myLinkedList.iterator();
+        while (integerIterator.hasNext()){
+            System.out.println(integerIterator.next());
+        }
+        System.out.println("final size = "+ myLinkedList.size());
 
     }
 
@@ -15,7 +77,7 @@ public class TestIterator {
         myLinkedList.add(1);
         myLinkedList.add(2);
         myLinkedList.add(3);
-        myLinkedList.add(0,10);
+        myLinkedList.add(1,10);
         Iterator<Integer> integerIterator = myLinkedList.iterator();
           while (integerIterator.hasNext()){
               System.out.println(integerIterator.next());

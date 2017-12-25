@@ -38,7 +38,10 @@ public class MyLinkedListIterator<T> implements Iterator<T> {
     //currentNode.previous.next = currentNode.next;
     @Override
     public void remove() {
-        if(currentNode.getPrevious()==null){
+        if(currentNode.getPrevious()==null&&currentNode.getNext()==null){
+            //не уверена что правильно
+            myLinkedList.root=null;
+        }else if(currentNode.getPrevious()==null){
             currentNode.getNext().setPrevious(null);
             myLinkedList.root=currentNode.getNext();
 
@@ -48,6 +51,7 @@ public class MyLinkedListIterator<T> implements Iterator<T> {
             currentNode.getPrevious().setNext(currentNode.getNext());
             currentNode.getNext().setPrevious(currentNode.getPrevious());
         }
+
     }
 
 }
