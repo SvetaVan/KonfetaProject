@@ -6,8 +6,54 @@ import java.util.Set;
 
 public class TestIterator {
     public static void main(String[] args) {
-    testClear();
+    testSet();
 
+    }
+    public static void testSet() {
+        MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
+        myLinkedList.add(3);
+        myLinkedList.add(2);
+        myLinkedList.add(1);
+        myLinkedList.set(-1,5);
+        Iterator<Integer> integerIterator = myLinkedList.iterator();
+        while (integerIterator.hasNext()){
+            System.out.println(integerIterator.next());
+        }
+        System.out.println("final size = "+ myLinkedList.size());
+    }
+
+    public static void testLastIndexOf() {
+        MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
+        myLinkedList.add(2);
+        myLinkedList.add(3);
+        myLinkedList.add(2);
+        myLinkedList.add(2);
+        myLinkedList.add(2);
+        myLinkedList.add(2);
+        myLinkedList.add(1);
+        System.out.println(myLinkedList.lastIndexOf("djfjf"));
+    }
+
+
+    public static void testIndexOf() {
+        MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
+        myLinkedList.add(3);
+        myLinkedList.add(2);
+        myLinkedList.add(1);
+        System.out.println(myLinkedList.indexOf('o'));
+    }
+
+    public static void testRemoveByIndex() {
+        MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
+        myLinkedList.add(3);
+        myLinkedList.add(2);
+        myLinkedList.add(1);
+        myLinkedList.remove(5);
+        Iterator<Integer> integerIterator = myLinkedList.iterator();
+        while (integerIterator.hasNext()){
+            System.out.println(integerIterator.next());
+        }
+        System.out.println("final size = "+ myLinkedList.size());
     }
 
     public static void testClear() {

@@ -282,10 +282,6 @@ public class MyLinkedList<T> implements List<T> {
         throw new IndexOutOfBoundsException("передан некорректный параметр элемента, возможные значения от 0 до " + (this.size - 1));
     }
 
-    @Override
-    public T set(int i, T t) {
-        return null;
-    }
 
     /*@Override
     public void add(int i, T t) {
@@ -363,19 +359,62 @@ public class MyLinkedList<T> implements List<T> {
         size++;
     }
 
+
+
     @Override
     public T remove(int i) {
-        return null;
+        if(i>this.size||i<0){
+            throw new IndexOutOfBoundsException("incorrect element index, index is: "+i+" size of the list is: "+this.size);
+        }
+        T deletedELement = this.get(i);
+        this.remove(this.get(i));
+        return deletedELement;
     }
 
     @Override
     public int indexOf(Object o) {
-        return 0;
+        if(o==null){
+            throw new NullPointerException("Passed parameter is null");
+        }
+        if(this.root.element.getClass()!=o.getClass()){
+            throw new ClassCastException("the class of passed parameter - "+ o.getClass()+" is not equal to the class of the list element type "+this.root.element.getClass());
+        }
+        int count=0;
+        Iterator<T> iterator = this.iterator();
+        while (iterator.hasNext()){
+            if(o.equals(iterator.next())){
+                return count;
+            }
+            count++;
+        }
+        return -1;
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        return 0;
+        if(o==null){
+            throw new NullPointerException("Passed parameter is null");
+        }
+        if(this.root.element.getClass()!=o.getClass()){
+            throw new ClassCastException("the class of passed parameter - "+ o.getClass()+" is not equal to the class of the list element type "+this.root.element.getClass());
+        }
+        List<Integer> oIndexes = new ArrayList<>();
+        int count = 0;
+        Iterator<T> iterator = this.iterator();
+        while (iterator.hasNext()){
+            if(o.equals(iterator.next())){
+                oIndexes.add(count);
+            }
+            count++;
+        }
+        return oIndexes.size()!=0?oIndexes.get(oIndexes.size()-1):-1;
+    }
+
+    @Override
+    public T set(int i, T t) {
+        T replacedElement = this.get(i);
+        this.findNode(i).setElement(t);
+        return replacedElement;
     }
 
     @Override
@@ -447,6 +486,10 @@ public class MyLinkedList<T> implements List<T> {
 
         void setNext(Node<V> node) {
             this.next = node;
+        }
+
+        void setElement(V element) {
+            this.element = element;
         }
 
 
