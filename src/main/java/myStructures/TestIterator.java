@@ -6,9 +6,10 @@ import java.util.Set;
 
 public class TestIterator {
     public static void main(String[] args) {
-    testSet();
+    testContainsAll();
 
     }
+    //maven test
     public static void testSet() {
         MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
         myLinkedList.add(3);
@@ -33,7 +34,6 @@ public class TestIterator {
         myLinkedList.add(1);
         System.out.println(myLinkedList.lastIndexOf("djfjf"));
     }
-
 
     public static void testIndexOf() {
         MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
@@ -142,10 +142,7 @@ public class TestIterator {
     }
 
     public static void testContainsAll() {
-        MyLinkedList<Integer> myLinkedList = new MyLinkedList<>();
-        myLinkedList.add(1);
-        myLinkedList.add(2);
-        myLinkedList.add(3);
+        MyLinkedList<Integer> myLinkedList = new MyLinkedList<>(1,2,3);
         Set<Integer> mySet = new HashSet<>();
         mySet.add(1);
         mySet.add(2);

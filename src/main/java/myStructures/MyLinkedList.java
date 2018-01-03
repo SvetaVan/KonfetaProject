@@ -22,6 +22,22 @@ public class MyLinkedList<T> implements List<T> {
         return size;
     }*/
 
+    public MyLinkedList() {
+    }
+
+    private MyLinkedList(Node<T> root, Node<T> last, int size ){
+        this.root = root;
+        this.last = last;
+        this.size = size;
+    }
+
+    @SafeVarargs
+    public MyLinkedList(T... toAdd) {
+        for (T element : toAdd) {
+            add(element);
+        }
+    }
+
 
     @Override
     public int size() {
@@ -152,7 +168,7 @@ public class MyLinkedList<T> implements List<T> {
             throw new ClassCastException("parameter type = " + o.getClass() + ", collection element type = " + this.root.element.getClass());
         }
         Iterator<T> iterator = this.iterator();
-        while (iterator.hasNext()&&size!=0) {
+        while (iterator.hasNext() && size != 0) {
             T currentObj = iterator.next();
             if (currentObj.equals(o)) {
                 iterator.remove();
@@ -166,7 +182,10 @@ public class MyLinkedList<T> implements List<T> {
     @Override
     public boolean containsAll(Collection<?> collection) {
         if (collection == null) {
-            throw new NullPointerException("collection is null");
+            throw new NullPointerException("collection is null or doesn't contain elements");
+        }
+        if(collection.size()==0||this.size()==0){
+            return false;
         }
         Iterator<?> iterator = collection.iterator();
         Object firstElement = iterator.next();
@@ -187,12 +206,25 @@ public class MyLinkedList<T> implements List<T> {
     }
 
     @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (T element : this) {
+            stringBuilder.append(element);
+            stringBuilder.append(", ");
+        }
+        if (stringBuilder.length() > 2) {
+            stringBuilder.setLength(stringBuilder.length() - 2);
+        }
+        return "[" + stringBuilder + "]";
+    }
+
+    @Override
     public boolean addAll(Collection<? extends T> collection) {
         if (collection == null) {
             throw new NullPointerException("collection is null");
         }
         if (collection.size() == 0) {
-            throw new NoSuchElementException("collection is empty");
+            return true;
         }
         Iterator<? extends T> iterator = collection.iterator();
         Object firstElement = iterator.next();
@@ -201,7 +233,7 @@ public class MyLinkedList<T> implements List<T> {
                     " in the specified collection are incompatible with this list\n" +
                     root.element.getClass() + " doesn't equal to " + firstElement.getClass());
         }
-        this.add((T)firstElement);
+        this.add((T) firstElement);
         while (iterator.hasNext()) {
             this.add(iterator.next());
         }
@@ -210,18 +242,18 @@ public class MyLinkedList<T> implements List<T> {
 
     @Override
     public boolean addAll(int i, Collection<? extends T> collection) {
-        if(collection==null){
+        if (collection == null) {
             throw new NullPointerException("collection is null");
         }
-        if(collection.size()==0){
+        if (collection.size() == 0) {
             throw new NoSuchElementException("collection is empty");
         }
-        if(i>collection.size()-1||i<0){
+        if (i > collection.size() - 1 || i < 0) {
             throw new IndexOutOfBoundsException("i is out of bound, more than the size of collection or less than 0");
         }
-        Iterator<? extends  T> iterator = collection.iterator();
-        while (iterator.hasNext()){
-            this.add(i,iterator.next());
+        Iterator<? extends T> iterator = collection.iterator();
+        while (iterator.hasNext()) {
+            this.add(i, iterator.next());
             i++;
         }
 
@@ -231,7 +263,7 @@ public class MyLinkedList<T> implements List<T> {
     @Override
     public boolean removeAll(Collection<?> collection) {
         Iterator<?> iterator = collection.iterator();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             remove(iterator.next());
         }
         return true;
@@ -240,22 +272,22 @@ public class MyLinkedList<T> implements List<T> {
     @Override
     //доделать
     public boolean retainAll(Collection<?> collection) {
-        if(collection==null){
+        if (collection == null) {
             throw new NullPointerException("collection is null");
         }
-        if(collection.size()==0){
+        if (collection.size() == 0) {
             throw new NoSuchElementException("size of collection is 0");
         }
         Iterator<T> iterator = this.iterator();
         Object element = iterator.next();
-        if(this.root.element.getClass()!=element.getClass()){
+        if (this.root.element.getClass() != element.getClass()) {
             throw new ClassCastException("the types of one or more elements\n" +
                     " in the specified collection are incompatible with this list\n" +
                     root.element.getClass() + " doesn't equal to " + element.getClass());
         }
 
-        while (iterator.hasNext()){
-            if(!collection.contains(element)){
+        while (iterator.hasNext()) {
+            if (!collection.contains(element)) {
                 remove(element);
             }
             element = iterator.next();
@@ -316,12 +348,12 @@ public class MyLinkedList<T> implements List<T> {
 
 */
 
-    private Node<T> findNode(int index){
+    private Node<T> findNode(int index) {
         Node<T> currentElement = root;
-        if(index>=size){
-            throw new IndexOutOfBoundsException(String.format("Too big index %s. Maximum: %s", index, size-1));
+        if (index >= size) {
+            throw new IndexOutOfBoundsException(String.format("Too big index %s. Maximum: %s", index, size - 1));
         }
-        for(int i=0; i<index;i++){
+        for (int i = 0; i < index; i++) {
             currentElement = currentElement.next;
         }
         return currentElement;
@@ -331,7 +363,7 @@ public class MyLinkedList<T> implements List<T> {
     @Override
     public void add(int index, T element) {
         // Если нам передан индекс после последнего элемента, это значит что мы хотим добавить в конец
-        if(index==size){
+        if (index == size) {
             add(element);
             return;
         }
@@ -347,24 +379,23 @@ public class MyLinkedList<T> implements List<T> {
         nextNode.setPrevious(newNode);
 
         // Cвязываем новый элемент с предыдущим, если такой существует (предыдуим может оказаться первый)
-        if(previousNode !=null){
+        if (previousNode != null) {
             previousNode.setNext(newNode);
             newNode.setPrevious(previousNode);
         }
 
         // Если мы добавляем в начало, не забудем и root обновить!
-        if(index == 0){
+        if (index == 0) {
             root = newNode;
         }
         size++;
     }
 
 
-
     @Override
     public T remove(int i) {
-        if(i>this.size||i<0){
-            throw new IndexOutOfBoundsException("incorrect element index, index is: "+i+" size of the list is: "+this.size);
+        if (i > this.size || i < 0) {
+            throw new IndexOutOfBoundsException("incorrect element index, index is: " + i + " size of the list is: " + this.size);
         }
         T deletedELement = this.get(i);
         this.remove(this.get(i));
@@ -373,16 +404,16 @@ public class MyLinkedList<T> implements List<T> {
 
     @Override
     public int indexOf(Object o) {
-        if(o==null){
+        if (o == null) {
             throw new NullPointerException("Passed parameter is null");
         }
-        if(this.root.element.getClass()!=o.getClass()){
-            throw new ClassCastException("the class of passed parameter - "+ o.getClass()+" is not equal to the class of the list element type "+this.root.element.getClass());
+        if (this.root.element.getClass() != o.getClass()) {
+            throw new ClassCastException("the class of passed parameter - " + o.getClass() + " is not equal to the class of the list element type " + this.root.element.getClass());
         }
-        int count=0;
+        int count = 0;
         Iterator<T> iterator = this.iterator();
-        while (iterator.hasNext()){
-            if(o.equals(iterator.next())){
+        while (iterator.hasNext()) {
+            if (o.equals(iterator.next())) {
                 return count;
             }
             count++;
@@ -392,29 +423,34 @@ public class MyLinkedList<T> implements List<T> {
 
     @Override
     public int lastIndexOf(Object o) {
-        if(o==null){
+        if (o == null) {
             throw new NullPointerException("Passed parameter is null");
         }
-        if(this.root.element.getClass()!=o.getClass()){
-            throw new ClassCastException("the class of passed parameter - "+ o.getClass()+" is not equal to the class of the list element type "+this.root.element.getClass());
+        if (this.root.element.getClass() != o.getClass()) {
+            throw new ClassCastException("the class of passed parameter - " + o.getClass() + " is not equal to the class of the list element type " + this.root.element.getClass());
         }
         List<Integer> oIndexes = new ArrayList<>();
         int count = 0;
         Iterator<T> iterator = this.iterator();
-        while (iterator.hasNext()){
-            if(o.equals(iterator.next())){
+        while (iterator.hasNext()) {
+            if (o.equals(iterator.next())) {
                 oIndexes.add(count);
             }
             count++;
         }
-        return oIndexes.size()!=0?oIndexes.get(oIndexes.size()-1):-1;
+        return oIndexes.size() != 0 ? oIndexes.get(oIndexes.size() - 1) : -1;
     }
 
     @Override
     public T set(int i, T t) {
+        if(t!=null){
         T replacedElement = this.get(i);
         this.findNode(i).setElement(t);
         return replacedElement;
+        }
+        else {
+            throw new NullPointerException("the element to be placed is null");
+        }
     }
 
     @Override
@@ -428,8 +464,10 @@ public class MyLinkedList<T> implements List<T> {
     }
 
     @Override
+    //проверить корректность параметров
     public List<T> subList(int i, int i1) {
-        return null;
+
+        return new MyLinkedList<>(findNode(i),findNode(i1-1),i1-i);
     }
 
 
