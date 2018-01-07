@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 public class MyLinkedList<T> implements List<T> {
-    Node<T> root;
+    private Node<T> root;
     private Node<T> last;
     private int size;
 
@@ -25,7 +25,7 @@ public class MyLinkedList<T> implements List<T> {
     public MyLinkedList() {
     }
 
-    private MyLinkedList(Node<T> root, Node<T> last, int size ){
+    private MyLinkedList(Node<T> root, Node<T> last, int size) {
         this.root = root;
         this.last = last;
         this.size = size;
@@ -38,12 +38,10 @@ public class MyLinkedList<T> implements List<T> {
         }
     }
 
-
     @Override
     public int size() {
         return size;
     }
-
 
     @Override
     public boolean isEmpty() {
@@ -64,7 +62,7 @@ public class MyLinkedList<T> implements List<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new MyLinkedListIterator<T>(this);
+        return new InnerIterator();
     }
 
     @Override
@@ -184,7 +182,7 @@ public class MyLinkedList<T> implements List<T> {
         if (collection == null) {
             throw new NullPointerException("collection is null or doesn't contain elements");
         }
-        if(collection.size()==0||this.size()==0){
+        if (collection.size() == 0 || this.size() == 0) {
             return false;
         }
         Iterator<?> iterator = collection.iterator();
@@ -314,40 +312,6 @@ public class MyLinkedList<T> implements List<T> {
         throw new IndexOutOfBoundsException("передан некорректный параметр элемента, возможные значения от 0 до " + (this.size - 1));
     }
 
-
-    /*@Override
-    public void add(int i, T t) {
-        Node<T> elementToShift=root;
-        Node<T> elementToInsert = new Node<>();
-        elementToInsert.element = t;
-        int count = 0;
-        while (elementToShift!=null){
-            if(count==i&&count==0){
-                elementToInsert.setPrevious(null);
-                elementToInsert.setNext(elementToShift);
-                elementToShift.setPrevious(elementToInsert);
-                root = elementToInsert;
-                return;
-            }else if(count==i&&count==this.size-1){
-                elementToInsert.setPrevious(elementToShift.getPrevious());
-                elementToInsert.setNext(elementToShift);
-                elementToShift.setNext(null);
-                elementToInsert.getPrevious().setNext(elementToInsert);
-                return;
-            }else if(count==i){
-                elementToInsert.setPrevious(elementToShift.getPrevious());
-                elementToInsert.setNext(elementToShift);
-                elementToShift.getPrevious().setNext(elementToInsert);
-                elementToShift.setPrevious(elementToInsert);
-                return;
-            }
-            elementToShift = elementToShift.next;
-            count++;
-        }
-    }
-
-*/
-
     private Node<T> findNode(int index) {
         Node<T> currentElement = root;
         if (index >= size) {
@@ -388,6 +352,7 @@ public class MyLinkedList<T> implements List<T> {
         if (index == 0) {
             root = newNode;
         }
+
         size++;
     }
 
@@ -443,35 +408,34 @@ public class MyLinkedList<T> implements List<T> {
 
     @Override
     public T set(int i, T t) {
-        if(t!=null){
-        T replacedElement = this.get(i);
-        this.findNode(i).setElement(t);
-        return replacedElement;
-        }
-        else {
+        if (t != null) {
+            T replacedElement = this.get(i);
+            this.findNode(i).setElement(t);
+            return replacedElement;
+        } else {
             throw new NullPointerException("the element to be placed is null");
         }
     }
 
     @Override
-    public ListIterator<T> listIterator() {
-        return null;
+    public java.util.ListIterator<T> listIterator() {
+        return new MyListIterator();
     }
 
     @Override
-    public ListIterator<T> listIterator(int i) {
-        return null;
+    public java.util.ListIterator<T> listIterator(int i) {
+        return new MyListIteratorWithIndex(i);
     }
 
     @Override
     //проверить корректность параметров
     public List<T> subList(int i, int i1) {
 
-        return new MyLinkedList<>(findNode(i),findNode(i1-1),i1-i);
+        return Collections.unmodifiableList(new MyLinkedList<>(findNode(i), findNode(i1 - 1), i1 - i));
     }
 
 
-    static class Node<V> {
+    private static class Node<V> {
         private Node<V> previous;
         private Node<V> next;
         private V element;
@@ -532,5 +496,347 @@ public class MyLinkedList<T> implements List<T> {
 
 
     }
+
+
+    private class InnerIterator implements Iterator<T> {
+        private MyLinkedList.Node<T> currentNode;
+
+        public InnerIterator() {
+            currentNode = null;
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (root != null && currentNode == null) {
+                return true;
+            } else if (currentNode != null && currentNode != last) {
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public T next() {
+            if (currentNode == null) {
+                currentNode = root;
+            } else if (hasNext()) {
+                currentNode = currentNode.getNext();
+            } else {
+                throw new NoSuchElementException();
+            }
+            return currentNode.getCurrentElement();
+        }
+
+        @Override
+        public void remove() {
+            if (currentNode.getPrevious() == null && currentNode.getNext() == null) {
+                root = null;
+                last = null;
+            } else if (currentNode.getPrevious() == null) {
+                currentNode.getNext().setPrevious(null);
+                root = currentNode.getNext();
+            } else if (currentNode == last) {
+                currentNode.getPrevious().setNext(null);
+            } else {
+                currentNode.getPrevious().setNext(currentNode.getNext());
+                currentNode.getNext().setPrevious(currentNode.getPrevious());
+            }
+            --size;
+
+        }
+
+    }
+
+    private class MyListIterator implements java.util.ListIterator<T> {
+        private MyLinkedList.Node<T> currentNode;
+        int currentIndex = 0;
+
+        public MyListIterator() {
+            currentNode = null;
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (root != null && currentNode == null) {
+                return true;
+            } else if (currentNode != null && currentNode != last) {
+                return true;
+            }
+            return false;
+        }
+
+
+        @Override
+        public T next() {
+            if (currentNode == null) {
+                currentNode = root;
+                currentIndex = 0;
+            } else if (hasNext()) {
+                currentNode = currentNode.getNext();
+                ++currentIndex;
+            } else {
+                throw new NoSuchElementException("В коллекции больше нет элементов");
+            }
+            return currentNode.getCurrentElement();
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            if (currentNode != null) {
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public T previous() {
+            if (hasPrevious()) {
+                currentIndex--;
+                T elementToReturn = currentNode.getCurrentElement();
+                currentNode = currentNode.getPrevious();
+                return elementToReturn;
+            } else {
+                throw new NoSuchElementException("такого элемента нет, вышли за пределы коллекции");
+            }
+        }
+
+        @Override
+        public int nextIndex() {
+            return currentIndex < MyLinkedList.this.size - 1 ? currentIndex + 1 : MyLinkedList.this.size - 1;
+        }
+
+        @Override
+        public int previousIndex() {
+            return currentIndex != 0 ? currentIndex - 1 : -1;
+        }
+
+        @Override
+        public void remove() {
+            //проверить на изменение размера
+            if (currentNode == null) {
+                throw new IllegalStateException("не были предварительно вызваны next или previous");
+            }
+            if (currentNode.getPrevious() == null && currentNode.getNext() == null) {
+                root = null;
+                last = null;
+            } else if (currentNode.getPrevious() == null) {
+                currentNode.getNext().setPrevious(null);
+                root = currentNode.getNext();
+            } else if (currentNode == last) {
+                last = currentNode.getPrevious();
+                currentNode.getPrevious().setNext(null);
+            } else {
+                currentNode.getPrevious().setNext(currentNode.getNext());
+                currentNode.getNext().setPrevious(currentNode.getPrevious());
+            }
+            --size;
+        }
+
+        @Override
+        public void set(Object o) {
+            if (currentNode.getCurrentElement().getClass() != o.getClass()) {
+                throw new ClassCastException("incompatible types with parameter\\n\" +\n" +
+                        currentNode.getCurrentElement().getClass() + " doesn't equal to " + o.getClass());
+            }
+            if (o != null) {
+                currentNode.setElement((T) o);
+            } else {
+                throw new NullPointerException("the element to be placed is null");
+            }
+        }
+
+        @Override
+        public void add(T t) {
+            if (t == null) {
+                throw new NullPointerException("null elements are not permitted");
+            }
+            Node<T> newNode = new Node<>(null, null, t);
+
+            //добавляем первый элемент и обновляем root
+            if (root == null) {
+                root = newNode;
+                last = root;
+            }
+
+            // если позиция на которую добавляем <size-1, то обновляем для NewNode предыдущий и следующий.
+            if (currentIndex < MyLinkedList.this.size - 1) {
+                Node<T> previousNode = findNode(currentIndex);
+                Node<T> nextNode = previousNode.getNext();
+
+                newNode.setPrevious(previousNode);
+                newNode.setNext(nextNode);
+
+                // для предыдущей и следующей ноды отновляем ссылки на новый элемент
+                previousNode.setNext(newNode);
+                nextNode.setPrevious(newNode);
+
+                //обновляем текущий индекс и текущую ноду
+                //++currentIndex;
+                next();
+                //currentNode = currentNode.getNext();
+            }
+
+            //если добавляем на последнюю позицию
+            if (currentIndex == MyLinkedList.this.size - 1) {
+                newNode.setPrevious(last);
+                //обновляем ссылку на последний элемент
+                last.next = newNode;
+                //последний добавленный элемент является last
+                last = newNode;
+
+                //обновляем текущий индекс и текущую ноду
+                ++currentIndex;
+                currentNode = newNode;
+            }
+            size++;
+        }
+    }
+
+    private class MyListIteratorWithIndex implements java.util.ListIterator<T> {
+        private MyLinkedList.Node<T> currentNode;
+        int currentIndex = 0;
+
+        public MyListIteratorWithIndex(int firstElementToBeReturnedByNext) {
+            currentNode = findNode(firstElementToBeReturnedByNext);
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (root != null && currentNode == null) {
+                return true;
+            } else if (currentNode != null && currentNode != last) {
+                return true;
+            }
+            return false;
+        }
+
+
+        @Override
+        public T next() {
+            if (currentNode == null) {
+                currentNode = root;
+                currentIndex = 0;
+            } else if (hasNext()) {
+                currentNode = currentNode.getNext();
+                ++currentIndex;
+            } else {
+                throw new NoSuchElementException("В коллекции больше нет элементов");
+            }
+            return currentNode.getCurrentElement();
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            if (currentNode != null) {
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public T previous() {
+            if (hasPrevious()) {
+                currentIndex--;
+                T elementToReturn = currentNode.getCurrentElement();
+                currentNode = currentNode.getPrevious();
+                return elementToReturn;
+            } else {
+                throw new NoSuchElementException("такого элемента нет, вышли за пределы коллекции");
+            }
+        }
+
+        @Override
+        public int nextIndex() {
+            return currentIndex < MyLinkedList.this.size - 1 ? currentIndex + 1 : MyLinkedList.this.size - 1;
+        }
+
+        @Override
+        public int previousIndex() {
+            return currentIndex != 0 ? currentIndex - 1 : -1;
+        }
+
+        @Override
+        public void remove() {
+            //проверить на изменение размера
+            if (currentNode == null) {
+                throw new IllegalStateException("не были предварительно вызваны next или previous");
+            }
+            if (currentNode.getPrevious() == null && currentNode.getNext() == null) {
+                root = null;
+                last = null;
+            } else if (currentNode.getPrevious() == null) {
+                currentNode.getNext().setPrevious(null);
+                root = currentNode.getNext();
+            } else if (currentNode == last) {
+                last = currentNode.getPrevious();
+                currentNode.getPrevious().setNext(null);
+            } else {
+                currentNode.getPrevious().setNext(currentNode.getNext());
+                currentNode.getNext().setPrevious(currentNode.getPrevious());
+            }
+            --size;
+        }
+
+        @Override
+        public void set(Object o) {
+            if (currentNode.getCurrentElement().getClass() != o.getClass()) {
+                throw new ClassCastException("incompatible types with parameter\\n\" +\n" +
+                        currentNode.getCurrentElement().getClass() + " doesn't equal to " + o.getClass());
+            }
+            if (o != null) {
+                currentNode.setElement((T) o);
+            } else {
+                throw new NullPointerException("the element to be placed is null");
+            }
+        }
+
+        @Override
+        public void add(T t) {
+            if (t == null) {
+                throw new NullPointerException("null elements are not permitted");
+            }
+            Node<T> newNode = new Node<>(null, null, t);
+
+            //добавляем первый элемент и обновляем root
+            if (root == null) {
+                root = newNode;
+                last = root;
+            }
+
+            // если позиция на которую добавляем <size-1, то обновляем для NewNode предыдущий и следующий.
+            if (currentIndex < MyLinkedList.this.size - 1) {
+                Node<T> previousNode = findNode(currentIndex);
+                Node<T> nextNode = previousNode.getNext();
+
+                newNode.setPrevious(previousNode);
+                newNode.setNext(nextNode);
+
+                // для предыдущей и следующей ноды отновляем ссылки на новый элемент
+                previousNode.setNext(newNode);
+                nextNode.setPrevious(newNode);
+
+                //обновляем текущий индекс и текущую ноду
+                //++currentIndex;
+                next();
+                //currentNode = currentNode.getNext();
+            }
+
+            //если добавляем на последнюю позицию
+            if (currentIndex == MyLinkedList.this.size - 1) {
+                newNode.setPrevious(last);
+                //обновляем ссылку на последний элемент
+                last.next = newNode;
+                //последний добавленный элемент является last
+                last = newNode;
+
+                //обновляем текущий индекс и текущую ноду
+                ++currentIndex;
+                currentNode = newNode;
+            }
+            size++;
+        }
+
+    }
 }
+
 
