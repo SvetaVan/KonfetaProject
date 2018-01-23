@@ -1,4 +1,5 @@
-*.iml
-out
 .idea
-
+lib
+out
+*.iml
+target
