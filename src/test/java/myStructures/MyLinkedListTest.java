@@ -163,15 +163,15 @@ public class MyLinkedListTest {
         Assert.assertEquals("incorrect next index", 3, listIterator.nextIndex());
 
         Assert.assertTrue("лист итератор при первом вызове hasPrevious некорректно отрабатывает, возвращая ложь", listIterator.hasPrevious());
-        Assert.assertEquals("incorrect 1 element", (Integer) 3, listIterator.previous());
+        Assert.assertEquals("incorrect 1 element", (Integer) 4, listIterator.previous());
         Assert.assertEquals("incorrect next index", 1, listIterator.previousIndex());
 
         Assert.assertTrue("лист итератор при вызове hasPrevious некорректно отрабатывает, возвращая ложь", listIterator.hasPrevious());
-        Assert.assertEquals("incorrect 1 element", (Integer) 2, listIterator.previous());
+        Assert.assertEquals("incorrect 1 element", (Integer) 3, listIterator.previous());
         Assert.assertEquals("incorrect next index", 0, listIterator.previousIndex());
 
         Assert.assertTrue("лист итератор при вызове hasPrevious некорректно отрабатывает, возвращая ложь", listIterator.hasPrevious());
-        Assert.assertEquals("incorrect 1 element", (Integer) 1, listIterator.previous());
+        Assert.assertEquals("incorrect 1 element", (Integer) 2, listIterator.previous());
         Assert.assertEquals("incorrect next index", -1, listIterator.previousIndex());
 
     }
