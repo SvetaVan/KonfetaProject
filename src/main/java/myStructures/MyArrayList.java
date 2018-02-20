@@ -1,14 +1,11 @@
 package myStructures;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 public class MyArrayList<T> extends MyAbstractList<T> {
     private Object[] array;
     private static final Object[] EMPTY_ARRAY = {};
-    private static final int DEFAULT_CAPACITY = 10;
+    //private static final int DEFAULT_CAPACITY = 10;
     private static final int CREATE_ARRAY_MULTIPLIED_BY_2 = 2;
 
 
@@ -39,7 +36,7 @@ public class MyArrayList<T> extends MyAbstractList<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return null;
+        return new InnerIterator();
     }
 
     @Override
@@ -47,7 +44,7 @@ public class MyArrayList<T> extends MyAbstractList<T> {
         return (T[]) array;
     }
 
-    @Override
+    @Override //что??
     public <T1> T1[] toArray(T1[] t1s) {
         return null;
     }
@@ -56,22 +53,18 @@ public class MyArrayList<T> extends MyAbstractList<T> {
     public boolean add(T t) {
         // null elements are permitted
         //class cast exception???
-        if (array.length == this.size()) {
-            array = arrayCopyIncreasedCapacity(array);
+        if (capacityCheckForAdd()) {
+            arrayCopyIncreasedCapacity();
         }
-        if (size > 0) {
-            array[size] = t;
-        } else {
-            array[0] = t;
-        }
-        size++;
+        array[size] = t;
+        ++size;
         return true;
     }
 
     @Override
     public boolean remove(Object o) {
         if (indexOf(o) != -1) {
-            array = arrayCopyToRemoveElement(array, indexOf(o));
+            arrayCopyToRemoveElement(indexOf(o));
             --size;
             return true;
         }
@@ -114,68 +107,130 @@ public class MyArrayList<T> extends MyAbstractList<T> {
 
     @Override
     public boolean addAll(int i, Collection<? extends T> collection) {
-        return false;
-    }
-
-    @Override
-    public boolean removeAll(Collection<?> collection) {
-        Iterator<?> iterator = collection.iterator();
-        while (iterator.hasNext()){
-            this.remove(iterator.next());
+        if (collection == null) {
+            throw new NullPointerException("collection is null");
+        }
+        if (collection.size() == 0) {
+            throw new NoSuchElementException("collection is empty");
+        }
+        this.rangeCheckForAdd(i);
+        Iterator<? extends T> iterator = collection.iterator();
+        while (iterator.hasNext()) {
+            this.add(i, iterator.next());
+            i++;
         }
         return true;
     }
 
     @Override
+    public boolean removeAll(Collection<?> collection) {
+        Iterator<?> iterator = collection.iterator();
+        while (iterator.hasNext()) {
+            this.remove(iterator.next());
+        }
+        size = 0;
+        return true;
+    }
+
+    @Override
+    //size???
     public boolean retainAll(Collection<?> collection) {
-        return false;
+        if (collection.size() == 0 || collection == null) {
+            return false;
+        }
+        Object[] newArray = new Object[array.length];
+        Iterator<?> collectionIterator = collection.iterator();
+        while (collectionIterator.hasNext()) {
+            int i = 0;
+            Object nextElement = collectionIterator.next();
+            if (this.contains(nextElement)) {
+                newArray[i] = nextElement;
+                i++;
+            } else {
+                size--;
+            }
+        }
+        array = newArray;
+        return true;
     }
 
     @Override
     public void clear() {
         removeAll(this);
+        size = 0;
     }
 
 
-    // size or length
     @Override
     public T get(int i) {
-        if (i < 0 || i >= this.size) {
-            throw new IndexOutOfBoundsException("передан некорректный параметр элемента, возможные значения от 0 до " + (this.size - 1));
-        }
-
+        rangeCheck(i);
         return (T) array[i];
     }
 
     @Override
     public T set(int i, T t) {
-        return null;
+        rangeCheck(i);
+        Object[] arrayNew = new Object[array.length];
+        Object elementToReturn = array[i];
+        for (int j = 0; j < arrayNew.length; j++) {
+            if (j == i) {
+                arrayNew[j] = t;
+            } else {
+                arrayNew[j] = array[j];
+            }
+        }
+        array = arrayNew;
+        return (T) elementToReturn;
     }
+
+    private boolean capacityCheckForAdd() {
+        return array.length == this.size() + 1;
+    }
+
+    private Object[] fillNewArrayForAdd(int indexToInsert, T elementToInsert, Object[] newArray) {
+        int indexOld = 0, indexNew = 0;
+        while (indexOld < this.size() && indexNew < newArray.length) {
+            if (indexToInsert == indexOld) {
+                newArray[indexNew] = elementToInsert;
+                newArray[++indexNew] = array[indexOld];
+            } else {
+                newArray[indexNew] = array[indexOld];
+            }
+            ++indexNew;
+            ++indexOld;
+        }
+        return newArray;
+    }
+
+    private Object[] arrayFactory() {
+        Object[] newArray;
+        if (capacityCheckForAdd()) {
+            newArray = new Object[array.length * CREATE_ARRAY_MULTIPLIED_BY_2];
+        } else {
+            newArray = new Object[array.length + 1];
+        }
+        return newArray;
+    }
+
 
     @Override
-    //пока не работает
     public void add(int i, T t) {
-        //если добавляем в конец, то вызываем обычный метод add
-        if (i == this.size()) {
+        rangeCheckForAdd(i);//1. проверяем границы индекса
+
+        if (i == this.size()) {//2. если добавляем в конец массива, то вызываем обычный метод add
             this.add(t);
+        } else {//3. если добавляем в любое другое место массива
+            array = fillNewArrayForAdd(i, t, arrayFactory());
+            ++size;
         }
-
-        //если добавляем в любое место массива
-
-        if (array.length == this.size()) {
-            array = arrayCopyIncreasedCapacity(array);
-        }
-
-
     }
+
 
     @Override
     public T remove(int i) {
-        if (i < 0 || i >= this.size) {
-            throw new IndexOutOfBoundsException("Acceptable index range is from 0 to " + this.size() + ", passed index is " + i);
-        }
+        rangeCheck(i);
         T elementToDelete = (T) array[i];
-        array = arrayCopyToRemoveElement(array, i);
+        arrayCopyToRemoveElement(i);
         --size;
         return elementToDelete;
     }
@@ -229,39 +284,75 @@ public class MyArrayList<T> extends MyAbstractList<T> {
     public ListIterator<T> listIterator(int i) {
         return null;
     }
-
+    //не работает...
     @Override
     public List<T> subList(int i, int i1) {
-        return null;
-    }
-
-
-    //ниже (3 метода) буду переделывать, какая-то хрень получилась
-    public static Object[] multiplyCapacity(Object[] array) {
-        Object[] arrayMultipliedCapacity = new Object[array.length * CREATE_ARRAY_MULTIPLIED_BY_2];
-        return arrayMultipliedCapacity;
-    }
-
-
-    public static Object[] arrayCopyIncreasedCapacity(Object[] arrayToCopy) {
-        Object[] arrayIncreased = multiplyCapacity(arrayToCopy);
-        for (int i = 0; i < arrayToCopy.length; i++) {
-            arrayIncreased[i] = arrayToCopy[i];
+        if (i < 0 || i > this.size - 1 || i1 < 0 || i1 > this.size - 1 || i1 < i) {
+            throw new IndexOutOfBoundsException("passed parameters are incorrect, the possible range is from 0 to " + (this.size() - 1));
         }
-        return arrayIncreased;
+        List<T> newArrayList = new MyArrayList<>(0);
+        if (i==i1){
+            return newArrayList;
+        }
+        for (int j = i; j< i1 ; j++) {
+            newArrayList.add((T)this.array[j]);
+        }
+        return newArrayList;
     }
 
-    public static Object[] arrayCopyToRemoveElement(Object[] arrayToCopy, int indexToRemove) {
-        Object[] arrayNew = new Object[arrayToCopy.length - 1];
-        int indexArray2Copy = 0, indexArrayNew = 0;
-        while (indexArray2Copy < arrayToCopy.length && indexArrayNew < arrayNew.length) {
-            if (indexArray2Copy != indexToRemove) {
-                arrayNew[indexArrayNew] = arrayToCopy[indexArray2Copy];
+
+    public void arrayCopyIncreasedCapacity() {
+        Object[] arrayIncreased = new Object[array.length * CREATE_ARRAY_MULTIPLIED_BY_2];
+        for (int i = 0; i < array.length; i++) {
+            arrayIncreased[i] = array[i];
+        }
+        array = arrayIncreased;
+    }
+
+    public void arrayCopyToRemoveElement(int indexToRemove) {
+        Object[] arrayNew = new Object[array.length - 1];
+        int indexArrayOld = 0, indexArrayNew = 0;
+        while (indexArrayOld < array.length && indexArrayNew < arrayNew.length) {
+            if (indexArrayOld != indexToRemove) {
+                arrayNew[indexArrayNew] = array[indexArrayOld];
                 indexArrayNew++;//увеличиваем индекс нового массива только если элемент не должен быть удален у первоначального массива
             }
-            indexArray2Copy++;//индекс в первоначальном массиве увеличиваем в любом случае
+            indexArrayOld++;//индекс в первоначальном массиве увеличиваем в любом случае
         }
-        return arrayNew;
+        array = arrayNew;
+    }
+
+    private void rangeCheck(int index) {
+        if (index < 0 || index >= this.size()) {
+            throw new IndexOutOfBoundsException("index is not acceptable, the range should be from 0 to " + (this.size() - 1) + ", current index is " + index);
+        }
+    }
+
+    private void rangeCheckForAdd(int index) {
+        if (index < 0 || index > this.size()) {
+            throw new IndexOutOfBoundsException("index is not acceptable, the range for element adding should be from 0 to " + (this.size()) + ", current index is " + index);
+        }
+    }
+
+
+    private class InnerIterator implements Iterator<T> {
+
+
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+
+        @Override
+        public T next() {
+            return null;
+        }
+
+        @Override
+        public void remove() {
+
+        }
     }
 
 
