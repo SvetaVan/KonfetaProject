@@ -3,24 +3,11 @@ package myStructures;
 import java.lang.reflect.Array;
 import java.util.*;
 
-public class MyLinkedList<T> implements List<T> {
+public class MyLinkedList<T> extends MyAbstractList<T> {
     private Node<T> root;
     private Node<T> last;
     private int size;
 
-    /*@Override
-    public int size() {
-        int size = 1;
-        if(this.root==null){
-            return 0;
-        }
-        Node<T> currentElement = this.root;
-        while (currentElement.next!=null){
-            size++;
-            currentElement = currentElement.next;
-        }
-        return size;
-    }*/
 
     public MyLinkedList() {
     }
@@ -40,12 +27,12 @@ public class MyLinkedList<T> implements List<T> {
 
     @Override
     public int size() {
-        return size;
+        return super.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return size == 0;
+        return super.isEmpty();
     }
 
     @Override
