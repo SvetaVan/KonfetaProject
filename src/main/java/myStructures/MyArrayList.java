@@ -238,7 +238,7 @@ public class MyArrayList<T> extends MyAbstractList<T> {
 
     //ниже (3 метода) буду переделывать, какая-то хрень получилась
     public static Object[] multiplyCapacity(Object[] array) {
-        Object[] arrayMultipliedCapacity = new Object[array.lengt h * CREATE_ARRAY_MULTIPLIED_BY_2];
+        Object[] arrayMultipliedCapacity = new Object[array.length * CREATE_ARRAY_MULTIPLIED_BY_2];
         return arrayMultipliedCapacity;
     }
 
