@@ -5,7 +5,8 @@ import java.util.*;
 public class MyArrayList<T> extends MyAbstractList<T> {
     private Object[] array;
     private static final Object[] EMPTY_ARRAY = {};
-    //private static final int DEFAULT_CAPACITY = 10;
+    private static final Object[] DEFAULT_CAPACITY_EMPTY_ARRAY = {};
+    private static final int DEFAULT_CAPACITY = 10;
     private static final int CREATE_ARRAY_MULTIPLIED_BY_2 = 2;
 
 
@@ -17,6 +18,10 @@ public class MyArrayList<T> extends MyAbstractList<T> {
         } else {
             throw new IllegalArgumentException("Illegal argument was passed " + initialCapacity);
         }
+    }
+
+    public MyArrayList(){
+        this.array = DEFAULT_CAPACITY_EMPTY_ARRAY;
     }
 
     @Override
@@ -184,7 +189,10 @@ public class MyArrayList<T> extends MyAbstractList<T> {
     }
 
     private boolean capacityCheckForAdd() {
-        return array.length == this.size() + 1;
+        if(array.length==0||array.length == this.size() + 1){
+            return true;
+        }
+        return false;
     }
 
     private Object[] fillNewArrayForAdd(int indexToInsert, T elementToInsert, Object[] newArray) {
@@ -285,11 +293,10 @@ public class MyArrayList<T> extends MyAbstractList<T> {
         return null;
     }
 
-    //не работает...
     @Override
     public List<T> subList(int i, int i1) {
-        if (i < 0 || i > this.size - 1 || i1 < 0 || i1 > this.size - 1 || i1 < i) {
-            throw new IndexOutOfBoundsException("passed parameters are incorrect, the possible range is from 0 to " + (this.size() - 1));
+        if (i < 0 || i > this.size || i1 < 0 || i1 > this.size || i1 < i) {
+            throw new IndexOutOfBoundsException("passed parameters are incorrect, the possible range is from 0 to " + (this.size()));
         }
         List<T> newArrayList = new MyArrayList<>(0);
         if (i == i1) {
@@ -302,15 +309,20 @@ public class MyArrayList<T> extends MyAbstractList<T> {
     }
 
 
-    public void arrayCopyIncreasedCapacity() {
-        Object[] arrayIncreased = new Object[array.length * CREATE_ARRAY_MULTIPLIED_BY_2];
+    private void arrayCopyIncreasedCapacity() {
+        Object[] arrayIncreased;
+        if(array.length==0){
+            arrayIncreased = new Object[DEFAULT_CAPACITY];
+        }else {
+            arrayIncreased = new Object[array.length * CREATE_ARRAY_MULTIPLIED_BY_2];
+        }
         for (int i = 0; i < array.length; i++) {
             arrayIncreased[i] = array[i];
         }
         array = arrayIncreased;
     }
 
-    public void arrayCopyToRemoveElement(int indexToRemove) {
+    private void arrayCopyToRemoveElement(int indexToRemove) {
         Object[] arrayNew = new Object[array.length - 1];
         int indexArrayOld = 0, indexArrayNew = 0;
         while (indexArrayOld < array.length && indexArrayNew < arrayNew.length) {

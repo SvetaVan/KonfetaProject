@@ -4,19 +4,17 @@ import java.util.*;
 
 public class MyArrayListTest {
     public static void main(String[] args) {
-        MyArrayList<Integer> myArrayList = new MyArrayList<>(2);
+        MyArrayList<Integer> myArrayList = new MyArrayList<>();
         myArrayList.add(1);
         myArrayList.add(2);
         myArrayList.add(3);
         myArrayList.add(4);
 
-        Iterator <Integer> integerIterator = myArrayList.iterator();
-
-        integerIterator.next();
-        for (int i = 0; i <myArrayList.size() ; i++) {
-            System.out.println(myArrayList.get(i));
+        List<Integer> integerList = myArrayList.subList(4,4);
+        for (int i = 0; i <integerList.size() ; i++) {
+            System.out.println(integerList.get(i));
         }
-        System.out.println(myArrayList.size());
+
 
 
 
@@ -27,14 +25,12 @@ public class MyArrayListTest {
         arrayList.add(2);
         arrayList.add(3);
         arrayList.add(4);
-        Iterator<Integer> integerIteratorAR = arrayList.iterator();
-        integerIteratorAR.next();
-        integerIteratorAR.remove();
-        for (Integer integer:arrayList) {
-            System.out.println(integer);
-        }
-        System.out.println(integerIteratorAR.next());*/
 
+        List<Integer> integerList = arrayList.subList(4,4);
+        for (int i = 0; i <integerList.size() ; i++) {
+            System.out.println(integerList.get(i));
+        }
+*/
 
 
 
