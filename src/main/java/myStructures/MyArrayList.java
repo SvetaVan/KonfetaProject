@@ -284,6 +284,7 @@ public class MyArrayList<T> extends MyAbstractList<T> {
     public ListIterator<T> listIterator(int i) {
         return null;
     }
+
     //не работает...
     @Override
     public List<T> subList(int i, int i1) {
@@ -291,11 +292,11 @@ public class MyArrayList<T> extends MyAbstractList<T> {
             throw new IndexOutOfBoundsException("passed parameters are incorrect, the possible range is from 0 to " + (this.size() - 1));
         }
         List<T> newArrayList = new MyArrayList<>(0);
-        if (i==i1){
+        if (i == i1) {
             return newArrayList;
         }
-        for (int j = i; j< i1 ; j++) {
-            newArrayList.add((T)this.array[j]);
+        for (int j = i; j < i1; j++) {
+            newArrayList.add((T) this.array[j]);
         }
         return newArrayList;
     }
@@ -336,24 +337,41 @@ public class MyArrayList<T> extends MyAbstractList<T> {
 
 
     private class InnerIterator implements Iterator<T> {
+        int cursor;
+        int lastReturned;
 
+        private InnerIterator() {
+            cursor = 0;
+        }
 
         @Override
         public boolean hasNext() {
-            return false;
+            return cursor != size;
         }
 
 
         @Override
         public T next() {
-            return null;
+            if (cursor >= size) {
+                throw new NoSuchElementException();
+            }
+            lastReturned = cursor;
+            cursor++;
+            return (T) array[lastReturned];
         }
+
 
         @Override
         public void remove() {
-
+            if(cursor==0){
+                throw new IndexOutOfBoundsException("Operation Removal was called before operation Next");
+            }
+            arrayCopyToRemoveElement(lastReturned);
+            --size;
+            --cursor;
         }
     }
-
-
 }
+
+
+
