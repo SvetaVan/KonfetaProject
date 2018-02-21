@@ -285,12 +285,12 @@ public class MyArrayList<T> extends MyAbstractList<T> {
 
     @Override
     public ListIterator<T> listIterator() {
-        return null;
+        return new MyListIterator();
     }
 
     @Override
     public ListIterator<T> listIterator(int i) {
-        return null;
+        return new MyListIteratorWithIndex();
     }
 
     @Override
@@ -383,6 +383,104 @@ public class MyArrayList<T> extends MyAbstractList<T> {
             --cursor;
         }
     }
+
+    private class MyListIterator implements ListIterator<T>{
+
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+        @Override
+        public T next() {
+            return null;
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return false;
+        }
+
+        @Override
+        public T previous() {
+            return null;
+        }
+
+        @Override
+        public int nextIndex() {
+            return 0;
+        }
+
+        @Override
+        public int previousIndex() {
+            return 0;
+        }
+
+        @Override
+        public void remove() {
+
+        }
+
+        @Override
+        public void set(T t) {
+
+        }
+
+        @Override
+        public void add(T t) {
+
+        }
+    }
+
+    private class MyListIteratorWithIndex implements ListIterator<T> {
+
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+        @Override
+        public T next() {
+            return null;
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return false;
+        }
+
+        @Override
+        public T previous() {
+            return null;
+        }
+
+        @Override
+        public int nextIndex() {
+            return 0;
+        }
+
+        @Override
+        public int previousIndex() {
+            return 0;
+        }
+
+        @Override
+        public void remove() {
+
+        }
+
+        @Override
+        public void set(T t) {
+
+        }
+
+        @Override
+        public void add(T t) {
+
+        }
+    }
+
+
 }
 
 
