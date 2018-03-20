@@ -1,0 +1,35 @@
+<html>
+
+<head>
+<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js?ver=1.4.2'></script>
+</head>
+
+
+
+<body >
+hello
+
+<script>
+
+
+
+
+$.getJSON( "servlet/accounts/loadAsList", function( data ) {
+
+    var content = "<table>"
+
+    $.each( data, function( key, val ) {
+        content += '<tr><td>' + val.id + '</td>';
+        content += '<td>' + val.name + '</td></tr>';
+    });
+    $('body').append(content);
+    content += "</table>"
+ });
+
+
+
+</script>
+
+</body>
+
+</html>

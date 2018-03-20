@@ -24,7 +24,7 @@ public class Account {
         return name;
     }
 
-    private long getId(){
+    public long getId(){
         return id;
     }
 
